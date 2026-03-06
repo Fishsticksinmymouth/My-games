@@ -1,10 +1,240 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>My Game Hub</title>
-  </head>
-  <body style="background:#111; color:white; font-family:Arial;">
-    <h1>My Game Hub</h1>
-    <p>Your site is working!</p>
-  </body>
+<head>
+  <title>VORTEX Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: #0a0a0f;
+      color: white;
+      font-family: Arial, sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* --- NAVBAR --- */
+    #navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: #111;
+      padding: 15px;
+      display: flex;
+      justify-content: space-around;
+      border-bottom: 2px solid #333;
+      z-index: 1000;
+    }
+
+    #navbar button {
+      background: #222;
+      border: 1px solid #444;
+      padding: 10px 20px;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    #navbar button:hover {
+      background: #444;
+    }
+
+    /* --- PAGES --- */
+    .page {
+      display: none;
+      padding: 90px 20px 20px;
+    }
+
+    .active {
+      display: block;
+    }
+
+    /* --- START MENU --- */
+    #startMenu {
+      text-align: center;
+      padding-top: 120px;
+    }
+
+    #title {
+      font-size: 60px;
+      font-weight: bold;
+      letter-spacing: 4px;
+      text-shadow: 0 0 20px #6f00ff;
+    }
+
+    #startBtn {
+      margin-top: 40px;
+      padding: 20px 40px;
+      font-size: 22px;
+      background: #6f00ff;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      color: white;
+      box-shadow: 0 0 20px #6f00ff;
+      transition: 0.2s;
+    }
+
+    #startBtn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px #9b4dff;
+    }
+
+    /* --- LISTS --- */
+    .item {
+      background: #1a1a22;
+      padding: 12px;
+      margin-bottom: 8px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .item:hover {
+      background: #292933;
+    }
+
+    iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+      margin-top: 20px;
+      display: none;
+    }
+
+    /* SETTINGS */
+    .setting {
+      background: #1a1a22;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border: 1px solid #333;
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div id="navbar" style="display:none;">
+  <button onclick="showPage('games')">Games</button>
+  <button onclick="showPage('apps')">Apps</button>
+  <button onclick="showPage('settings')">Settings</button>
+</div>
+
+<!-- START MENU -->
+<div id="startMenu" class="page active">
+  <div id="title">VORTEX</div>
+  <button id="startBtn" onclick="enterSite()">ENTER</button>
+</div>
+
+<!-- GAMES PAGE -->
+<div id="games" class="page">
+  <h1>Games (1000)</h1>
+  <div id="gameList"></div>
+  <iframe id="gameFrame"></iframe>
+</div>
+
+<!-- APPS PAGE -->
+<div id="apps" class="page">
+  <h1>Top 25 Apps</h1>
+  <div id="appList"></div>
+  <iframe id="appFrame"></iframe>
+</div>
+
+<!-- SETTINGS PAGE -->
+<div id="settings" class="page">
+  <h1>Settings</h1>
+
+  <div class="setting">
+    <label><input type="checkbox" onclick="toggleDarkMode()"> Dark Mode</label>
+  </div>
+
+  <div class="setting">
+    <label><input type="checkbox" onclick="toggleBlur()"> Blur Background</label>
+  </div>
+
+  <div class="setting">
+    <label><input type="checkbox" onclick="toggleSafe()"> Safe Mode (Hide iframe)</label>
+  </div>
+
+</div>
+
+<script>
+/* --- START MENU --- */
+function enterSite() {
+  document.getElementById("startMenu").style.display = "none";
+  document.getElementById("navbar").style.display = "flex";
+  showPage("games");
+}
+
+/* --- PAGE SWITCHING --- */
+function showPage(id) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+/* --- GENERATE 1000 GAMES --- */
+const gameList = document.getElementById("gameList");
+for (let i = 1; i <= 1000; i++) {
+  const div = document.createElement("div");
+  div.className = "item";
+  div.innerText = "Game " + i;
+  div.onclick = () => loadGame("https://example.com/game" + i);
+  gameList.appendChild(div);
+}
+
+/* --- LOAD GAME --- */
+function loadGame(url) {
+  const frame = document.getElementById("gameFrame");
+  frame.src = url;
+  frame.style.display = "block";
+  window.scrollTo(0, frame.offsetTop);
+}
+
+/* --- TOP 25 APPS --- */
+const apps = [
+  "YouTube", "Discord", "Spotify", "Roblox", "TikTok",
+  "Instagram", "Snapchat", "Twitch", "Reddit", "Twitter",
+  "Gmail", "Google Docs", "Google Drive", "Chrome Dino",
+  "GeoGuessr", "CoolMath", "Chess", "2048", "Slope",
+  "Subway Surfers", "Minecraft Classic", "Agar.io",
+  "Krunker", "Paper.io", "Flappy Bird"
+];
+
+const appList = document.getElementById("appList");
+apps.forEach(app => {
+  const div = document.createElement("div");
+  div.className = "item";
+  div.innerText = app;
+  div.onclick = () => loadApp("https://example.com/" + app);
+  appList.appendChild(div);
+});
+
+function loadApp(url) {
+  const frame = document.getElementById("appFrame");
+  frame.src = url;
+  frame.style.display = "block";
+  window.scrollTo(0, frame.offsetTop);
+}
+
+/* --- SETTINGS --- */
+function toggleDarkMode() {
+  document.body.style.background =
+    document.body.style.background === "white" ? "#0a0a0f" : "white";
+  document.body.style.color =
+    document.body.style.color === "black" ? "white" : "black";
+}
+
+function toggleBlur() {
+  document.body.style.backdropFilter =
+    document.body.style.backdropFilter === "blur(10px)" ? "none" : "blur(10px)";
+}
+
+function toggleSafe() {
+  document.querySelectorAll("iframe").forEach(f => f.style.display = "none");
+}
+</script>
+
+</body>
 </html>
