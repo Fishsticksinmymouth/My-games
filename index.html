@@ -160,7 +160,7 @@
 
 <script>
 // =========================
-// WORKING GAMES
+// WORKING GAMES (iframe‑safe)
 // =========================
 
 const games = [
@@ -172,7 +172,7 @@ const games = [
 ];
 
 // =========================
-// WORKING APPS
+// WORKING APPS (iframe‑safe)
 // =========================
 
 const apps = [
@@ -223,7 +223,7 @@ function loadApp(a) {
 }
 
 // =========================
-// AI
+// AI — Smart Local Helper
 // =========================
 
 function addAIMessage(text, who="bot") {
@@ -243,7 +243,33 @@ function handleAI() {
   addAIMessage(text, "user");
   input.value = "";
 
-  addAIMessage("I'm here! Try loading a game or app on the left.", "bot");
+  const lower = text.toLowerCase();
+
+  if (lower.includes("best game")) {
+    return addAIMessage("Slope, Run 3, Moto X3M, and Geometry Dash are top picks.");
+  }
+
+  if (lower.includes("best app")) {
+    return addAIMessage("Desmos, Pixel Art Editor, and Online Notepad are great choices.");
+  }
+
+  if (lower.includes("help")) {
+    return addAIMessage("Use the left panel to load games or apps. Ask me anything about the hub.");
+  }
+
+  if (lower.includes("random game")) {
+    const g = games[Math.floor(Math.random() * games.length)];
+    loadGame(g);
+    return addAIMessage("Random game loaded: " + g.title);
+  }
+
+  if (lower.includes("random app")) {
+    const a = apps[Math.floor(Math.random() * apps.length)];
+    loadApp(a);
+    return addAIMessage("Random app loaded: " + a.title);
+  }
+
+  addAIMessage("I can help with games, apps, search, and info. Try asking: 'best game', 'random game', or 'help'.");
 }
 
 document.getElementById("aiSend").addEventListener("click", handleAI);
