@@ -168,7 +168,9 @@ const games = [
   { title: "Run 3", url: "https://ubg100.github.io/run-3/" },
   { title: "Tunnel Rush", url: "https://ubg100.github.io/tunnel-rush/" },
   { title: "Subway Surfers", url: "https://ubg100.github.io/subway-surfers/" },
-  { title: "Geometry Dash", url: "https://ubg100.github.io/geometry-dash/" }
+  { title: "Geometry Dash", url: "https://ubg100.github.io/geometry-dash/" },
+  { title: "Basketball Stars", url: "https://ubg100.github.io/basketball-stars/" },
+  { title: "Retro Bowl", url: "https://ubg100.github.io/retro-bowl/" }
 ];
 
 // =========================
@@ -177,6 +179,7 @@ const games = [
 
 const apps = [
   { title: "Scientific Calculator", url: "https://www.desmos.com/scientific" },
+  { title: "Graphing Calculator", url: "https://www.desmos.com/calculator" },
   { title: "Online Notepad", url: "https://anotepad.com/" },
   { title: "Pixel Art Editor", url: "https://www.pixilart.com/draw" }
 ];
@@ -185,13 +188,13 @@ const apps = [
 // RENDER LISTS
 // =========================
 
-function renderLists() {
+function renderLists(filteredGames = games, filteredApps = apps) {
   const gList = document.getElementById("gameList");
   const aList = document.getElementById("appList");
   gList.innerHTML = "";
   aList.innerHTML = "";
 
-  games.forEach(g => {
+  filteredGames.forEach(g => {
     const li = document.createElement("li");
     li.className = "list-item";
     li.textContent = g.title;
@@ -199,7 +202,7 @@ function renderLists() {
     gList.appendChild(li);
   });
 
-  apps.forEach(a => {
+  filteredApps.forEach(a => {
     const li = document.createElement("li");
     li.className = "list-item";
     li.textContent = a.title;
@@ -207,6 +210,19 @@ function renderLists() {
     aList.appendChild(li);
   });
 }
+
+// =========================
+// SEARCH ENGINE
+// =========================
+
+document.getElementById("searchInput").addEventListener("input", () => {
+  const q = searchInput.value.toLowerCase();
+
+  const filteredGames = games.filter(g => g.title.toLowerCase().includes(q));
+  const filteredApps = apps.filter(a => a.title.toLowerCase().includes(q));
+
+  renderLists(filteredGames, filteredApps);
+});
 
 // =========================
 // LOAD GAME / APP
@@ -223,7 +239,7 @@ function loadApp(a) {
 }
 
 // =========================
-// AI — Smart Local Helper
+// AI — Simple Local Helper
 // =========================
 
 function addAIMessage(text, who="bot") {
@@ -246,7 +262,7 @@ function handleAI() {
   const lower = text.toLowerCase();
 
   if (lower.includes("best game")) {
-    return addAIMessage("Slope, Run 3, Moto X3M, and Geometry Dash are top picks.");
+    return addAIMessage("Slope, Run 3, Retro Bowl, and Geometry Dash are top picks.");
   }
 
   if (lower.includes("best app")) {
@@ -254,7 +270,7 @@ function handleAI() {
   }
 
   if (lower.includes("help")) {
-    return addAIMessage("Use the left panel to load games or apps. Ask me anything about the hub.");
+    return addAIMessage("Use the left panel to load games or apps. Search filters everything.");
   }
 
   if (lower.includes("random game")) {
