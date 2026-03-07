@@ -1,171 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>VORTEX Hub</title>
-<style>
-  body {
-    margin: 0;
-    background: #0a0a12;
-    color: white;
-    font-family: Arial, sans-serif;
-    display: flex;
-    height: 100vh;
-    overflow: hidden;
-  }
-  header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 50px;
-    background: #111;
-    display: flex;
-    align-items: center;
-    padding: 0 10px;
-    z-index: 10;
-  }
-  header h1 {
-    margin: 0;
-    font-size: 18px;
-  }
-  #searchInput {
-    margin-left: 10px;
-    padding: 6px;
-    border-radius: 4px;
-    border: none;
-    outline: none;
-    width: 260px;
-  }
-  .container {
-    display: flex;
-    flex: 1;
-    margin-top: 50px;
-  }
-  .sidebar {
-    width: 260px;
-    background: #141422;
-    border-right: 1px solid #222;
-    display: flex;
-    flex-direction: column;
-  }
-  .sidebar h2 {
-    margin: 10px;
-    font-size: 16px;
-  }
-  .list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0 10px 10px;
-  }
-  .list ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  .list-item {
-    padding: 6px 8px;
-    margin-bottom: 4px;
-    background: #1d1d33;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-  }
-  .list-item:hover {
-    background: #2a2a44;
-  }
-  .main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-  #viewerTitle {
-    padding: 10px;
-    font-size: 16px;
-  }
-  #viewerFrame {
-    flex: 1;
-    width: 100%;
-    border: none;
-    background: black;
-  }
-  .ai-panel {
-    height: 190px;
-    background: #141422;
-    border-top: 1px solid #222;
-    display: flex;
-    flex-direction: column;
-  }
-  #aiChat {
-    flex: 1;
-    overflow-y: auto;
-    padding: 8px;
-    font-size: 13px;
-  }
-  .ai-msg {
-    padding: 6px;
-    margin-bottom: 6px;
-    border-radius: 4px;
-    max-width: 90%;
-  }
-  .ai-bot { background: #1f1f3a; }
-  .ai-user { background: #2b7cff; align-self: flex-end; }
-  .ai-input-row {
-    display: flex;
-    padding: 6px;
-    gap: 6px;
-  }
-  #aiInput {
-    flex: 1;
-    padding: 6px;
-    border-radius: 4px;
-    border: none;
-    outline: none;
-  }
-  #aiSend {
-    padding: 6px 10px;
-    border: none;
-    background: #2b7cff;
-    color: white;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  #aiSend:hover {
-    background: #1f5fd1;
-  }
-</style>
-</head>
-
-<body>
-
-<header>
-  <h1>VORTEX Hub</h1>
-  <input id="searchInput" placeholder="Search games & apps...">
-</header>
-
-<div class="container">
-  <div class="sidebar">
-    <h2>Games</h2>
-    <div class="list"><ul id="gameList"></ul></div>
-
-    <h2>Apps</h2>
-    <div class="list"><ul id="appList"></ul></div>
-  </div>
-
-  <div class="main">
-    <div id="viewerTitle">Select something to load</div>
-    <iframe id="viewerFrame"></iframe>
-
-    <div class="ai-panel">
-      <div id="aiChat"></div>
-      <div class="ai-input-row">
-        <input id="aiInput" placeholder="Ask the VORTEX helper...">
-        <button id="aiSend">Send</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <script>
 // =========================
 // GAMES (PRE-FILLED URLS)
@@ -208,10 +40,8 @@ const games = [
   { title: "Idle Breakout",      url: "https://ubg100.github.io/idle-breakout/",            category: "Idle",    tags:["bricks","idle"] },
 
   // Sandbox / Misc
-  { title: "Sandbox Physics",    url: "https://ubg100.github.io/sandbox-city-cars-simulator/", category: "Sandbox", tags:["physics","sandbox"] },
+  { title: "Sandbox City",       url: "https://ubg100.github.io/sandbox-city-cars-simulator/", category: "Sandbox", tags:["physics","sandbox"] },
   { title: "Stickman Hook",      url: "https://ubg100.github.io/stickman-hook/",            category: "Arcade",  tags:["swing","physics"] },
-
-  // You can keep adding more in this same format.
 ];
 
 // =========================
@@ -230,6 +60,9 @@ const apps = [
   { title: "Timer & Stopwatch",     url: "https://timer.onlineclock.net/",      category: "Tools",        tags: ["timer","clock"] },
   { title: "Unit Converter",        url: "https://www.unitconverters.net/",     category: "Tools",        tags: ["convert","units"] }
 ];
+
+let lastSelectedGame = null;
+let lastSelectedApp = null;
 
 // =========================
 // RENDER LISTS
@@ -266,11 +99,13 @@ function renderLists(filteredGames = null, filteredApps = null) {
 // =========================
 
 function loadGame(g) {
+  lastSelectedGame = g;
   document.getElementById("viewerTitle").textContent = g.title + " (Game)";
   document.getElementById("viewerFrame").src = g.url;
 }
 
 function loadApp(a) {
+  lastSelectedApp = a;
   document.getElementById("viewerTitle").textContent = a.title + " (App)";
   document.getElementById("viewerFrame").src = a.url;
 }
@@ -305,7 +140,7 @@ function setupSearch() {
 }
 
 // =========================
-// AI HELPER
+// AI HELPER (FAKE COPILOT)
 // =========================
 
 function addAIMessage(text, who="bot") {
@@ -317,6 +152,86 @@ function addAIMessage(text, who="bot") {
   chat.scrollTop = chat.scrollHeight;
 }
 
+const aiKnowledge = [
+  {
+    test: t => t.includes("best") && t.includes("game"),
+    reply: () => "Some strong picks: Slope, Run 3, Moto X3M, Retro Bowl, and 1v1.lol. You can also type /random game."
+  },
+  {
+    test: t => t.includes("best") && t.includes("app"),
+    reply: () => "For apps, Desmos calculators, Pixel Art Editor, and CodePen are great. Try /random app."
+  },
+  {
+    test: t => t.includes("school") || t.includes("blocked"),
+    reply: () => "I can’t see your school’s filter, but these are iframe‑friendly sites. If one is blocked, try another or swap the URL in the code."
+  },
+  {
+    test: t => t.includes("search"),
+    reply: () => "Use the search bar at the top. It filters both games and apps by title, category, and tags in real time."
+  },
+  {
+    test: t => t.includes("add") && t.includes("game"),
+    reply: () => "To add a game, copy one of the objects in the games array and change the title/url/category/tags."
+  },
+  {
+    test: t => t.includes("add") && t.includes("app"),
+    reply: () => "To add an app, copy one of the objects in the apps array and change the title/url/category/tags."
+  },
+  {
+    test: t => t.includes("how") && t.includes("work"),
+    reply: () => "VORTEX Hub = left side lists games/apps, center iframe loads them, bottom panel is me. Search filters everything."
+  },
+  {
+    test: t => t.includes("who") && t.includes("you"),
+    reply: () => "I’m the local VORTEX helper—scripted, not cloud AI—but tuned to feel smart and useful inside this page."
+  }
+];
+
+function aiCommandHelp() {
+  return [
+    "Commands you can use:",
+    "• /help – show this help",
+    "• /random game – load a random game",
+    "• /random app – load a random app",
+    "• /last game – info about the last game you opened",
+    "• /last app – info about the last app you opened",
+    "• /info – explain how VORTEX works"
+  ].join("\n");
+}
+
+function aiHandleCommand(text) {
+  const lower = text.toLowerCase();
+
+  if (lower === "/help") {
+    return aiCommandHelp();
+  }
+  if (lower === "/info") {
+    return "VORTEX Hub is a web launcher: left = games/apps, center = iframe, bottom = AI helper. Search filters everything.";
+  }
+  if (lower === "/random game") {
+    if (!games.length) return "No games are configured yet.";
+    const g = games[Math.floor(Math.random() * games.length)];
+    loadGame(g);
+    return "Random game loaded: " + g.title;
+  }
+  if (lower === "/random app") {
+    if (!apps.length) return "No apps are configured yet.";
+    const a = apps[Math.floor(Math.random() * apps.length)];
+    loadApp(a);
+    return "Random app loaded: " + a.title;
+  }
+  if (lower === "/last game") {
+    if (!lastSelectedGame) return "You haven’t opened any game yet.";
+    return "Last game you opened was: " + lastSelectedGame.title + " (" + lastSelectedGame.category + ").";
+  }
+  if (lower === "/last app") {
+    if (!lastSelectedApp) return "You haven’t opened any app yet.";
+    return "Last app you opened was: " + lastSelectedApp.title + " (" + lastSelectedApp.category + ").";
+  }
+
+  return null;
+}
+
 function handleAI() {
   const input = document.getElementById("aiInput");
   const text = input.value.trim();
@@ -325,28 +240,36 @@ function handleAI() {
   addAIMessage(text, "user");
   input.value = "";
 
-  const lower = text.toLowerCase();
-  let reply = "";
-
-  if (lower.includes("hi") || lower.includes("hello")) {
-    reply = "Hey! I’m the VORTEX helper. Pick a game or app on the left, or search by name or category.";
-  } else if (lower.includes("best") && lower.includes("game")) {
-    reply = "Popular picks: Slope, Run 3, Moto X3M, Retro Bowl, and 1v1.lol. Click them in the list to load.";
-  } else if (lower.includes("school") || lower.includes("blocked")) {
-    reply = "If something is blocked at school, try another game or app. You can also swap URLs in the code later.";
-  } else if (lower.includes("search")) {
-    reply = "Use the search bar at the top. It filters both games and apps by title, category, and tags.";
-  } else if (lower.includes("add") && lower.includes("game")) {
-    reply = "To add more games, copy one of the game objects in the games array and change the title/url.";
-  } else if (lower.includes("add") && lower.includes("app")) {
-    reply = "To add more apps, copy one of the app objects in the apps array and change the title/url.";
-  } else if (lower.includes("help") || lower.includes("what can you do")) {
-    reply = "I can explain how this hub works, how search works, and how to add or organize games and apps.";
-  } else {
-    reply = "I’m a small on-page helper. Try asking about games, apps, search, or how to add more content.";
+  // Commands
+  if (text.startsWith("/")) {
+    const cmdReply = aiHandleCommand(text);
+    if (cmdReply) {
+      setTimeout(() => addAIMessage(cmdReply, "bot"), 150);
+      return;
+    } else {
+      setTimeout(() => addAIMessage("Unknown command. Type /help to see what I can do.", "bot"), 150);
+      return;
+    }
   }
 
-  setTimeout(() => addAIMessage(reply, "bot"), 200);
+  const lower = text.toLowerCase();
+
+  // Knowledge-based replies
+  for (const item of aiKnowledge) {
+    try {
+      if (item.test(lower)) {
+        const reply = typeof item.reply === "function" ? item.reply() : item.reply;
+        setTimeout(() => addAIMessage(reply, "bot"), 200);
+        return;
+      }
+    } catch (e) {
+      // ignore bad test
+    }
+  }
+
+  // Generic fallback
+  const fallback = "I’m a local VORTEX helper, not full cloud AI, but I can help with games, apps, search, and commands like /help, /random game, /random app.";
+  setTimeout(() => addAIMessage(fallback, "bot"), 200);
 }
 
 function setupAI() {
@@ -361,7 +284,7 @@ function setupAI() {
     }
   });
 
-  addAIMessage("Welcome to VORTEX Hub. Pick a game or app on the left, or ask me how things work.", "bot");
+  addAIMessage("Welcome to VORTEX Hub. Type /help to see what I can do, or just ask about games, apps, or search.", "bot");
 }
 
 // =========================
@@ -375,6 +298,3 @@ document.addEventListener("DOMContentLoaded", () => {
   if (games[0]) loadGame(games[0]);
 });
 </script>
-
-</body>
-</html>
